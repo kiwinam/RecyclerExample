@@ -3,6 +3,7 @@ package charlie.recyclerexample;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         // 변경될 가능성이 있다면 false 로 , 없다면 true를 설정해주세요.
         mainBinding.recyclerView.setHasFixedSize(true);
 
-        // RecyclerView에 Adapter를 설정해줍니다.
+        // RecyclerView 에 Adapter 를 설정해줍니다.
         adapter = new RecyclerAdapter(mItems);
         mainBinding.recyclerView.setAdapter(adapter);
 
@@ -45,6 +46,13 @@ public class MainActivity extends AppCompatActivity {
         //mainBinding.recyclerView.setLayoutManager(new GridLayoutManager(this,4));
         // 가로 또는 세로 스크롤 목록 형식
         mainBinding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+        DividerItemDecoration dividerItemDecoration =
+                new DividerItemDecoration(getApplicationContext(),new LinearLayoutManager(this).getOrientation());
+        mainBinding.recyclerView.addItemDecoration(dividerItemDecoration);
+
+        mainBinding.recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(48));
 
         mainBinding.recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getApplicationContext(), mainBinding.recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
