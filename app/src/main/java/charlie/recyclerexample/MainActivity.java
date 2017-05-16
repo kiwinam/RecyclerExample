@@ -2,6 +2,8 @@ package charlie.recyclerexample;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 
 import charlie.recyclerexample.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private String[] names = {"Charlie","Andrew","Han","Liz","Thomas","Sky","Andy","Lee","Park"};
     private static final int LAYOUT = R.layout.activity_main;
     private ActivityMainBinding mainBinding;
@@ -24,9 +26,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainBinding = DataBindingUtil.setContentView(this,LAYOUT);
-
         setRecyclerView();
-
+        setRefresh();
     }
 
     private void setRecyclerView(){
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         // RecyclerView 에 Adapter 를 설정해줍니다.
         adapter = new RecyclerAdapter(mItems);
+
         mainBinding.recyclerView.setAdapter(adapter);
 
         // 다양한 LayoutManager 가 있습니다. 원하시는 방법을 선택해주세요.
@@ -46,19 +48,17 @@ public class MainActivity extends AppCompatActivity {
         //mainBinding.recyclerView.setLayoutManager(new GridLayoutManager(this,4));
         // 가로 또는 세로 스크롤 목록 형식
         mainBinding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-
         DividerItemDecoration dividerItemDecoration =
                 new DividerItemDecoration(getApplicationContext(),new LinearLayoutManager(this).getOrientation());
         mainBinding.recyclerView.addItemDecoration(dividerItemDecoration);
-
-        mainBinding.recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(48));
+        //mainBinding.recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(48));
 
         mainBinding.recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getApplicationContext(), mainBinding.recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         Toast.makeText(getApplicationContext(),position+"번 째 아이템 클릭",Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
@@ -67,6 +67,23 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }));
         setData();
+    }
+
+    private void setRefresh(){
+        mainBinding.swipeRefreshLo.setOnRefreshListener(this);
+        mainBinding.swipeRefreshLo.setColorSchemeColors(getResources().getIntArray(R.array.google_colors));
+    }
+
+
+    @Override
+    public void onRefresh() {
+        mainBinding.recyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(mainBinding.recyclerView,"Refresh Success",Snackbar.LENGTH_SHORT).show();
+                mainBinding.swipeRefreshLo.setRefreshing(false);
+            }
+        },500);
     }
 
     private void setData(){
@@ -79,4 +96,5 @@ public class MainActivity extends AppCompatActivity {
         // 데이터 추가가 완료되었으면 notifyDataSetChanged() 메서드를 호출해 데이터 변경 체크를 실행합니다.
         adapter.notifyDataSetChanged();
     }
+
 }
